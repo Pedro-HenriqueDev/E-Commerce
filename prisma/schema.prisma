@@ -7,39 +7,80 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Patients {
+enum Role {
+  ADMIN
+  USER
+}
+
+model Users {
   id String @default(uuid()) @id
   name String
   email String @unique
   password String
-  phone Int
-  role Int
+  role Role @default(USER)
   isVerificate Boolean
-  appointments Appointments[]
-}
+  adress String?
+  age Int
 
-model Doctors {
-  id String @default(uuid()) @id
-  name String
-  email String @unique
-  phone Int
-  password String
-  specialty String
-  role Int
-  room Int?
-  isVerificate Boolean
-  appointments Appointments[]
-}
-
-model Appointments {
-  id String @default(uuid()) @id
-  Patient Patients @relation(fields: [patientId],references: [id])
-  patientId String
-  Doctor Doctors @relation(fields: [doctorId], references: [id])
-  doctorId String
-  status String
-  description String
   createdAt DateTime @default(now())
-  consultationAt DateTime
-  finished Boolean
+  updatedAt DateTime @updatedAt
+
+  assessments Assessment[]
+  cart Cart[]
+}
+
+model Cart {
+  id Int @id @default(autoincrement())
+  User Users? @relation(fields: [idUser], references: [id] ,onDelete: Cascade) 
+  idUser String
+  Products Products? @relation(fields: [idProduct], references: [id] ,onDelete: Cascade)
+  idProduct Int
+}
+
+model Admins {
+  id String @default(uuid()) @id
+  name String
+  email String @unique
+  password String
+  role Role @default(ADMIN)
+  isVerificate Boolean
+}
+
+model Categories {
+  id Int @id @default(autoincrement())
+  name String
+  products CategoriesProducts[]
+}
+
+model CategoriesProducts {
+  id Int @id @default(autoincrement())
+  Categories Categories @relation(fields: [idCategorie], references: [id] ,onDelete: Cascade)
+  idCategorie Int
+  Products Products @relation(fields: [idProduct], references: [id] ,onDelete: Cascade)
+  idProduct Int
+}
+
+model Assessment {
+  id Int @id @default(autoincrement())
+  rating Int @db.SmallInt
+  comment String @db.VarChar(240)
+  User Users @relation(fields: [idUser], references: [id] ,onDelete: Cascade)
+  idUser String
+  Product Products @relation(fields: [idProduct], references: [id] ,onDelete: Cascade)
+  idProduct Int
+}
+
+model Products {
+  id Int @id @default(autoincrement())
+  name String
+  description String
+  photo Bytes
+  price Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  categories CategoriesProducts[]
+  assessment Assessment[]
+  carts Cart[]
 }

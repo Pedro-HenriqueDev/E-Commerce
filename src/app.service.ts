@@ -6,12 +6,6 @@ export class AppService {
   constructor(private readonly prisma: PrismaService) {}
 
   async getHello() {
-    const patients = await this.prisma.patients.findMany()
-    const doctors = await this.prisma.doctors.findMany()
-
-    return {
-      patients,
-      doctors
-    }
+    return "HELLO"
   }
 }

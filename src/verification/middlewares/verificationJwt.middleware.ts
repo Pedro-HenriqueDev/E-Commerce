@@ -1,15 +1,15 @@
 import { Injectable, NestMiddleware, UnauthorizedException } from "@nestjs/common";
 import { NextFunction, Request, Response } from "express";
-import { UserPayload } from "src/auth/models/UserPayload";
+import { UserPayload } from "src/models/UserPayload";
 import { JwtService } from "@nestjs/jwt"
-import { PatientsService } from "src/patients/patients.service";
-import { DoctorsService } from "src/doctors/doctors.service";
+import { UsersService } from "src/users/users.service";
+import { AdminsService } from "src/admins/admins.service";
 
 @Injectable()
 export class VerificationJwt implements NestMiddleware {
     constructor(
-        private readonly doctorsService: DoctorsService,
-        private readonly patientsService: PatientsService,
+        private readonly adminsService: AdminsService,
+        private readonly usersService: UsersService,
         private readonly jwtService: JwtService
     ){}
 
@@ -24,12 +24,12 @@ export class VerificationJwt implements NestMiddleware {
 
             if(!user) throw new UnauthorizedException()
 
-            if(userType == "patients") {
-                req.user = await this.patientsService.verification(user.email)
+            if(userType == "users") {
+                req.user = await this.usersService.verification(user.email)
 
                 return next()
-            } else if(userType == "doctors") {
-                req.user = await this.doctorsService.verification(user.email)
+            } else if(userType == "admins") {
+                req.user = await this.adminsService.verification(user.email)
 
                 return next()
             }

@@ -18,13 +18,13 @@ import { AuthService } from '../auth.service';
 
       if(!userType) throw new UnauthorizedException("wrong route")
         
-      if(userType == "patients") {
-        const patient = await this.authService.validate(body.email, body.password, userType)
-        req.user = patient
+      if(userType == "users") {
+        const user = await this.authService.validate(body.email, body.password, userType)
+        req.user = user
         return next();
-      } if(userType == "doctors") {
-        const doctor = await this.authService.validate(body.email, body.password, userType)
-        req.user = doctor
+      } if(userType == "admins") {
+        const admin = await this.authService.validate(body.email, body.password, userType)
+        req.user = admin
         return next();
       }
       throw new UnauthorizedException("router wrong")

@@ -1,7 +1,7 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, Query, Get, Req, Headers } from '@nestjs/common';
+import { Controller, HttpCode, HttpStatus, Post, Get, Req,} from '@nestjs/common';
 import { Request } from 'express';
 import { AuthService } from './auth.service';
-import { AccessToken } from './models/access-token';
+import { AccessToken } from '../models/access-token';
 
 @Controller()
 export class AuthController {
@@ -11,7 +11,7 @@ export class AuthController {
     @Post("login")
     @HttpCode(HttpStatus.OK)
     async login(@Req() req: Request): Promise<AccessToken> {
-        return await this.authService.login(req.user)
+        return this.authService.login(req.user)
     }
 
     @Get("oi")

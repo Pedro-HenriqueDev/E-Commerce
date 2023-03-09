@@ -1,20 +1,20 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { PatientsService } from 'src/patients/patients.service';
-import { DoctorsService } from 'src/doctors/doctors.service';
 import * as bcrypt from "bcrypt"
-import { UserPayload } from './models/UserPayload';
+import { UserPayload } from '../models/UserPayload';
 import { JwtService } from '@nestjs/jwt';
-import { User } from './models/UserModel';
+import { UserModel } from '../models/UserModel';
+import { AdminsService } from 'src/admins/admins.service';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class AuthService {
     constructor(
-        private readonly doctorsService : DoctorsService,
-        private readonly patientsService : PatientsService,
+        private readonly adminsService : AdminsService,
+        private readonly usersService : UsersService,
         private readonly jwtService : JwtService
     ) {}
 
-    login(user: User) {
+    login(user: UserModel) {
         const payload: UserPayload = {
             sub: user.id,
             email: user.email,
@@ -32,21 +32,21 @@ export class AuthService {
 
     async validate(email: string, password: string, userType: string) {
 
-        if(userType == "patients")  {
-            const patients = await this.patientsService.findByEmail(email)
-            await this.exeptions(patients, password)
-            return {...patients, password: undefined}
+        if(userType == "users")  {
+            const user = await this.usersService.findByEmail(email)
+            await this.exeptions(user, password)
+            return {...user, password: undefined}
 
-        } if(userType == "doctors") {
-            const doctor = await this.doctorsService.findByEmail(email)
-            await this.exeptions(doctor, password)
-            return {...doctor,password: undefined}
+        } if(userType == "admins") {
+            const admin = await this.adminsService.findByEmail(email)
+            await this.exeptions(admin, password)
+            return {...admin,password: undefined}
 
         }
         throw new UnauthorizedException()
     }
 
-    async exeptions(user: User, password: string) {
+    async exeptions(user: UserModel, password: string) {
 
         if(!user) {
             throw new UnauthorizedException("Email address or password provided is incorrect.")
